@@ -10,6 +10,7 @@ SRC = ./src
 target = ${BIN}/main.out
 
 all:
+	make ${OBJ}/galeshapley.o
 	make ${OBJ}/main.o
 	make ${target}
 	${target}
@@ -19,3 +20,6 @@ ${target}: ${OBJ}/*
 
 ${OBJ}/main.o: ${SRC}/main.cpp
 	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/main.cpp -o ${OBJ}/main.o
+
+${OBJ}/galeshapley.o: ${SRC}/galeshapley.cpp
+	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/galeshapley.cpp -o ${OBJ}/galeshapley.o
