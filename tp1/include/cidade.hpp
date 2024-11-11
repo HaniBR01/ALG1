@@ -9,6 +9,7 @@
     public:
         string nome;
 
+        Cidade() : nome("") {}
         Cidade(const string& nome) : nome(nome) {}
     };
 

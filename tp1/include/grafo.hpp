@@ -4,11 +4,12 @@
     #include <unordered_map>
     #include <vector>
     #include <queue>
+    #include <climits>
     #include <string>
     #include <stack>
     #include "cidade.hpp"
 
-    using namespace tsd;
+    using namespace std;
 
     class Grafo {
     private:
@@ -26,6 +27,8 @@
         int bfsDistanciaMaxima(const string& cidadeInicial) const;
         Grafo transpor() const;
         vector<vector<string>> encontrarComponentesFortementeConectados();
+        bool verificaGrausEntradaSaida() const;
+        string encontrarCapital() const;
 
     };
 

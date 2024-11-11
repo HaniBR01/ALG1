@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++11 -Wall
+CFLAGS = -std=c++17 -Wall
 
 # Diretórios
 OBJ = ./obj
@@ -10,7 +10,7 @@ SRC = ./src
 target = ${BIN}/main.out
 
 all:
-	make ${OBJ}/galeshapley.o
+	make ${OBJ}/grafo.o
 	make ${OBJ}/main.o
 	make ${target}
 	${target}
@@ -21,5 +21,5 @@ ${target}: ${OBJ}/*
 ${OBJ}/main.o: ${SRC}/main.cpp
 	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/main.cpp -o ${OBJ}/main.o
 
-${OBJ}/galeshapley.o: ${SRC}/galeshapley.cpp
-	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/galeshapley.cpp -o ${OBJ}/galeshapley.o
+${OBJ}/grafo.o: ${SRC}/grafo.cpp
+	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/grafo.cpp -o ${OBJ}/grafo.o

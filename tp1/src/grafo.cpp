@@ -39,7 +39,7 @@ void Grafo::dfs(const string& cidadeInicial, unordered_map<string, bool>& visita
 int Grafo::bfsDistanciaMaxima(const string& cidadeInicial) const {
     unordered_map<string, int> distancia;
     for (const auto& cidade : cidades) {
-        distancia[cidade.first] = -1;
+        distancia.at(cidade.first) = -1;
     }
     distancia[cidadeInicial] = 0;
 
@@ -54,9 +54,7 @@ int Grafo::bfsDistanciaMaxima(const string& cidadeInicial) const {
         for (const auto& vizinho : lista_Adjacencia.at(atual)) {
             if (distancia[vizinho] == -1) { // Não visitado
                 distancia[vizinho] = distancia[atual] + 1;
-                if (distancia[vizinho] > distanciaMaxima) {
-                    distanciaMaxima = distancia[vizinho];
-                }
+                distanciaMaxima = max(distanciaMaxima, distancia[vizinho]);
                 fila.push(vizinho);
             }
         }
@@ -83,7 +81,7 @@ vector<vector<string>> Grafo::encontrarComponentesFortementeConectados() {
     vector<vector<string>> componentes;
 
     for (const auto& cidade : cidades) {
-        if (!visitado[cidade.first]) {
+        if (!visitado.at(cidade.first)) {
             dfs(cidade.first, visitado);
             ordem.push(cidade.first);
         }
@@ -106,4 +104,86 @@ vector<vector<string>> Grafo::encontrarComponentesFortementeConectados() {
         }
     }
     return componentes;
+}
+
+bool Grafo::verificaCicloEuleriano() const {
+    // Verificar se todos os vértices com arestas possuem grau par
+    for (const auto& cidade : lista_Adjacencia) {
+        if (cidade.second.size() % 2 != 0) {
+            return false; // Se algum vértice tem grau ímpar, não pode ser Euleriano
+        }
+    }
+
+    // Verificar se o grafo é conexo (exceto os vértices com grau 0)
+    unordered_map<string, bool> visitado;
+    string cidadeInicial;
+    bool encontrou = false;
+    
+    for (const auto& cidade : cidades) {
+        if (lista_Adjacencia.at(cidade.first).size() > 0) {
+            cidadeInicial = cidade.first;
+            encontrou = true;
+            break;
+        }
+    }
+
+    if (!encontrou) {
+        return false; // Se não houver arestas, o grafo é trivialmente Euleriano
+    }
+
+    dfs(cidadeInicial, visitado);
+
+    // Verificar se todos os vértices com grau maior que 0 foram visitados
+    for (const auto& cidade : cidades) {
+        if (lista_Adjacencia.at(cidade.first).size() > 0 && !visitado.at(cidade.first)) {
+            return false; // Se algum vértice não foi visitado, não é Euleriano
+        }
+    }
+
+    return true; // Grafo é Euleriano
+}
+
+bool Grafo::verificaGrausEntradaSaida() const {
+    // Verifica os graus de entrada e saída para todos os vértices
+    unordered_map<string, int> grauEntrada;
+    unordered_map<string, int> grauSaida;
+
+    // Inicializa os graus
+    for (const auto& cidade : cidades) {
+        grauEntrada.at(cidade.first) = 0;
+        grauSaida.at(cidade.first) = 0;
+    }
+
+    // Conta os graus de entrada e saída
+    for (const auto& cidade : lista_Adjacencia) {
+        for (const auto& vizinho : cidade.second) {
+            grauEntrada[vizinho]++;  // A cidade 'vizinho' tem uma aresta de entrada
+            grauSaida.at(cidade.first)++;  // A cidade 'cidade.first' tem uma aresta de saída
+        }
+    }
+
+    // Verifica se todos os vértices têm grau de entrada igual ao grau de saída
+    for (const auto& cidade : cidades) {
+        if (grauEntrada.at(cidade.first) != grauSaida.at(cidade.first)) {
+            return false; // Se algum vértice não tiver grau de entrada igual ao de saída, retorna falso
+        }
+    }
+
+    return true; // Todos os vértices têm grau de entrada igual ao de saída
+}
+
+string Grafo::encontrarCapital() const {
+    int distanciaMinima = INT_MAX; // Inicializa com o valor máximo possível
+    string cidadeCapital;
+
+    // Para cada cidade, calcular a distância máxima para todas as outras cidades
+    for (const auto& cidade : cidades) {
+        int distanciaMaxima = bfsDistanciaMaxima(cidade.first); // Calcula a maior distância a partir dessa cidade
+        if (distanciaMaxima < distanciaMinima) {
+            distanciaMinima = distanciaMaxima;
+            cidadeCapital = cidade.first;
+        }
+    }
+
+    return cidadeCapital; // Retorna a cidade com a menor distância máxima
 }
