@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "grafo.hpp"
+#include "estado.hpp"
 
 using namespace std;
 
@@ -11,22 +12,17 @@ int main() {
     cout << "Digite o número de estradas (arestas): ";
     cin >> m;
 
-    Grafo grafo;
+    Estado brazil(n,m);
 
-    // Lê as arestas
-    cout << "Digite as " << m << " estradas (saída, destino):" << endl;
-    for (int i = 0; i < m; ++i) {
-        string cidadeSaida, cidadeDestino;
-        cin >> cidadeSaida >> cidadeDestino;
-        grafo.addEstrada(cidadeSaida, cidadeDestino);
-    }
+    cout << "capital: " << brazil.encontrarCapital() << "\n\n";
+    vector<vector<string>> kosaraju = brazil.kosaraju();
 
-    // Aqui você pode chamar funções como encontrar a capital, verificar ciclos, etc.
-    string capital = grafo.encontrarCapital();
-    if (capital.empty()) {
-        cout << "Não há uma cidade central, o grafo não é conexo." << endl;
-    } else {
-        cout << "A cidade capital é: " << capital << endl;
+    for (const auto& cfc : kosaraju) {
+        cout << "Componente fortemente conectada: ";
+        for (const auto& cidade : cfc) {
+            cout << cidade << " ";
+        }
+        cout << endl;
     }
 
     return 0;

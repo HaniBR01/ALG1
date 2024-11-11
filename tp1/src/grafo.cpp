@@ -1,21 +1,22 @@
 #include "grafo.hpp"
 
 void Grafo::addCidade(const string& nome) {
-    if (cidades.find(nome) == cidades.end()) {
-        cidades[nome] = Cidade(nome);
-        lista_Adjacencia[nome] = {};
-    }
+    for (const auto& c : cidades)
+        if (c == nome)
+            return;
+
+    cidades.push_back(nome);
 }
 
 void Grafo::addEstrada(const string& saida, const string& destino) {
     addCidade(saida);
     addCidade(destino);
-    lista_Adjacencia[saida].push_back(destino);
+    listaAdjacencia[saida].push_back(destino);
 }
 
 bool Grafo::hasEstrada(const string& saida, const string& destino) const {
-    auto it = lista_Adjacencia.find(saida);
-    if (it != lista_Adjacencia.end()) {
+    auto it = listaAdjacencia.find(saida);
+    if (it != listaAdjacencia.end()) {
         for (const auto& dest : it->second) {
             if (dest == destino) return true;
         }
@@ -24,50 +25,65 @@ bool Grafo::hasEstrada(const string& saida, const string& destino) const {
 }
 
 const vector<string>& Grafo::getAdjacencia(const string& nome) const {
-    return lista_Adjacencia.at(nome);
+    return listaAdjacencia.at(nome);
 }
 
-void Grafo::dfs(const string& cidadeInicial, unordered_map<string, bool>& visitado) const {
-    visitado[cidadeInicial] = true;
-    for (const auto& vizinho : lista_Adjacencia.at(cidadeInicial)) {
-        if (!visitado[vizinho]) {
-            dfs(vizinho, visitado);
-        }
-    }
+const vector<string> Grafo::getCidades() const {
+    return cidades;
 }
 
-int Grafo::bfsDistanciaMaxima(const string& cidadeInicial) const {
+int* Grafo::bfsDistanciaMaxima(const string& cidadeInicial) const {
     unordered_map<string, int> distancia;
     for (const auto& cidade : cidades) {
-        distancia.at(cidade.first) = -1;
+        distancia[cidade] = -1;
     }
     distancia[cidadeInicial] = 0;
 
     queue<string> fila;
     fila.push(cidadeInicial);
 
-    int distanciaMaxima = 0;
+    int* distanciaMaxima = new int[2];
+    distanciaMaxima[0] = 0;
+    distanciaMaxima[1] = 1;
     while (!fila.empty()) {
         string atual = fila.front();
         fila.pop();
-
-        for (const auto& vizinho : lista_Adjacencia.at(atual)) {
-            if (distancia[vizinho] == -1) { // Não visitado
-                distancia[vizinho] = distancia[atual] + 1;
-                distanciaMaxima = max(distanciaMaxima, distancia[vizinho]);
-                fila.push(vizinho);
+        if(listaAdjacencia.find(atual) != listaAdjacencia.end()){
+            for (const auto& vizinho : listaAdjacencia.find(atual)->second) {
+                if (distancia.find(vizinho)->second == -1) {
+                    distancia.find(vizinho)->second = distancia.find(atual)->second + 1;
+                    distanciaMaxima[0] = (distanciaMaxima[0] > distancia.find(vizinho)->second) ? distanciaMaxima[0] : distancia.find(vizinho)->second;
+                    fila.push(vizinho);
+                    distanciaMaxima[1] += 1;
+                }
             }
         }
     }
     return distanciaMaxima;
 }
 
+void Grafo::dfs(const string& cidadeInicial, unordered_map<string, bool>& visitado, stack<string>& ordem) const {
+    visitado[cidadeInicial] = true;
+    
+    // Se a cidade tem vizinhos, visitamos eles recursivamente
+    if (listaAdjacencia.find(cidadeInicial) != listaAdjacencia.end()) {
+        for (const auto& vizinho : listaAdjacencia.at(cidadeInicial)) {
+            if (!visitado[vizinho]) {
+                dfs(vizinho, visitado, ordem);
+            }
+        }
+    }
+    
+    // Após visitar todos os vizinhos, empurramos a cidade para a pilha
+    ordem.push(cidadeInicial);
+}
+
 Grafo Grafo::transpor() const {
     Grafo transposto;
     for (const auto& cidade : cidades) {
-        transposto.addCidade(cidade.first);
+        transposto.addCidade(cidade);
     }
-    for (const auto& [cidade, vizinhos] : lista_Adjacencia) {
+    for (const auto& [cidade, vizinhos] : listaAdjacencia) {
         for (const auto& vizinho : vizinhos) {
             transposto.addEstrada(vizinho, cidade);
         }
@@ -75,115 +91,48 @@ Grafo Grafo::transpor() const {
     return transposto;
 }
 
-vector<vector<string>> Grafo::encontrarComponentesFortementeConectados() {
+void Grafo::dfs(const string& cidadeInicial, unordered_map<string, bool>& visitado, vector<string>& cfc) const {
+    visitado[cidadeInicial] = true;
+    cfc.push_back(cidadeInicial);  // Adiciona a cidade à componente fortemente conexa
+
+    if (listaAdjacencia.find(cidadeInicial) != listaAdjacencia.end()) {
+        for (const auto& vizinho : listaAdjacencia.at(cidadeInicial)) {
+            if (!visitado[vizinho]) {
+                dfs(vizinho, visitado, cfc);
+            }
+        }
+    }
+}
+
+vector<vector<string>> Grafo::kosaraju() {
     unordered_map<string, bool> visitado;
-    stack<string> ordem;
+    stack<string> ordem;  // Pilha para armazenar a ordem de término dos nós
     vector<vector<string>> componentes;
 
+    // Passo 1: DFS no grafo original
     for (const auto& cidade : cidades) {
-        if (!visitado.at(cidade.first)) {
-            dfs(cidade.first, visitado);
-            ordem.push(cidade.first);
+        if (!visitado[cidade]) {
+            dfs(cidade, visitado, ordem);
         }
     }
 
-    visitado.clear();
+    // Passo 2: Transpor o grafo
     Grafo transposto = this->transpor();
+
+    // Passo 3: DFS no grafo transposto usando a ordem da pilha
+    fill(visitado.begin(), visitado.end(), false);  // Limpar o vetor de visitados para a segunda DFS
 
     while (!ordem.empty()) {
         string cidade = ordem.top();
         ordem.pop();
 
+        // Se a cidade ainda não foi visitada, ela pertence a uma nova CFC
         if (!visitado[cidade]) {
-            vector<string> componente;
-            transposto.dfs(cidade, visitado);
-            for (const auto& [nome, foiVisitado] : visitado) {
-                if (foiVisitado) componente.push_back(nome);
-            }
-            componentes.push_back(componente);
+            vector<string> cfc;
+            transposto.dfs(cidade, visitado, cfc);  // Realiza a DFS no grafo transposto
+            componentes.push_back(cfc);  // Adiciona a componente fortemente conexa
         }
     }
+
     return componentes;
-}
-
-bool Grafo::verificaCicloEuleriano() const {
-    // Verificar se todos os vértices com arestas possuem grau par
-    for (const auto& cidade : lista_Adjacencia) {
-        if (cidade.second.size() % 2 != 0) {
-            return false; // Se algum vértice tem grau ímpar, não pode ser Euleriano
-        }
-    }
-
-    // Verificar se o grafo é conexo (exceto os vértices com grau 0)
-    unordered_map<string, bool> visitado;
-    string cidadeInicial;
-    bool encontrou = false;
-    
-    for (const auto& cidade : cidades) {
-        if (lista_Adjacencia.at(cidade.first).size() > 0) {
-            cidadeInicial = cidade.first;
-            encontrou = true;
-            break;
-        }
-    }
-
-    if (!encontrou) {
-        return false; // Se não houver arestas, o grafo é trivialmente Euleriano
-    }
-
-    dfs(cidadeInicial, visitado);
-
-    // Verificar se todos os vértices com grau maior que 0 foram visitados
-    for (const auto& cidade : cidades) {
-        if (lista_Adjacencia.at(cidade.first).size() > 0 && !visitado.at(cidade.first)) {
-            return false; // Se algum vértice não foi visitado, não é Euleriano
-        }
-    }
-
-    return true; // Grafo é Euleriano
-}
-
-bool Grafo::verificaGrausEntradaSaida() const {
-    // Verifica os graus de entrada e saída para todos os vértices
-    unordered_map<string, int> grauEntrada;
-    unordered_map<string, int> grauSaida;
-
-    // Inicializa os graus
-    for (const auto& cidade : cidades) {
-        grauEntrada.at(cidade.first) = 0;
-        grauSaida.at(cidade.first) = 0;
-    }
-
-    // Conta os graus de entrada e saída
-    for (const auto& cidade : lista_Adjacencia) {
-        for (const auto& vizinho : cidade.second) {
-            grauEntrada[vizinho]++;  // A cidade 'vizinho' tem uma aresta de entrada
-            grauSaida.at(cidade.first)++;  // A cidade 'cidade.first' tem uma aresta de saída
-        }
-    }
-
-    // Verifica se todos os vértices têm grau de entrada igual ao grau de saída
-    for (const auto& cidade : cidades) {
-        if (grauEntrada.at(cidade.first) != grauSaida.at(cidade.first)) {
-            return false; // Se algum vértice não tiver grau de entrada igual ao de saída, retorna falso
-        }
-    }
-
-    return true; // Todos os vértices têm grau de entrada igual ao de saída
-}
-
-string Grafo::encontrarCapital() const {
-    int distanciaMinima = INT_MAX; // Inicializa com o valor máximo possível
-    string cidadeCapital;
-
-    // Para cada cidade, calcular a distância máxima para todas as outras cidades
-    for (const auto& cidade : cidades) {
-        int distanciaMaxima = bfsDistanciaMaxima(cidade.first); // Calcula a maior distância a partir dessa cidade
-        if (distanciaMaxima < distanciaMinima) {
-            distanciaMinima = distanciaMaxima;
-            cidadeCapital = cidade.first;
-        }
-    }
-
-    return cidadeCapital; // Retorna a cidade com a menor distância máxima
 }
