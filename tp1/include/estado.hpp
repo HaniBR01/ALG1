@@ -10,17 +10,26 @@
 using namespace std;
 
 class Estado{
-    public:
+    private:
         Grafo Imperio;
         int centros;
         int estradas;
+        
         string capital;
+        vector<vector<string>> cfcs;
+        vector<pair<string, vector<string>>> patrulhamentos;
+        pair<int, vector<string>> batalhoes;
+
+        void encontrarCapital();
+        bool encontrarCapital(const std::vector<std::string>& componente, const std::string& capital) const;
+        void kosaraju();
+        void realizarPatrulhamento();
     public:
         Estado (int n, int m);
-        string encontrarCapital();
-        bool encontrarCapital(const std::vector<std::string>& componente, const std::string& capital) const;
-        pair<int, vector<string>> kosaraju();
-        vector<pair<string, vector<string>>> realizarPatrulhamento();
+        void printCapital();
+        void printCFCS();
+        void printBatalhoes();
+        void printPatrulhamento();
 };
 
 #endif
