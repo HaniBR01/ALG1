@@ -95,7 +95,7 @@ void Estado::printPatrulhamento() {
     cout << patrulhamentos.size() << endl;
     for (const auto& patrulha : patrulhamentos) {
         const vector<string>& rota = patrulha.second;
-        for (int i = rota.size() - 1; i > 0; --i) {
+    for (size_t i = rota.size() - 1; i > 0; --i) {
             cout << rota[i] << " ";
         }
         cout << endl;
