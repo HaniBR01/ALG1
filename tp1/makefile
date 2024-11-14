@@ -17,7 +17,9 @@ all:
 
 run:
 	${target} < teste1.txt
-	
+	${target} < teste2.txt
+	${target} < teste3.txt
+
 ${target}: ${OBJ}/*
 	${CC} ${CFLAGS} ${OBJ}/* -o ${target}
 
@@ -29,3 +31,7 @@ ${OBJ}/grafo.o: ${SRC}/grafo.cpp
 
 ${OBJ}/estado.o: ${SRC}/estado.cpp
 	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/estado.cpp -o ${OBJ}/estado.o
+
+clean:
+	rm -r ./obj/*.o
+	rm -r ./bin/*.*

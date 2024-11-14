@@ -14,15 +14,30 @@ int main() {
 
     Estado brazil(n,m);
 
-    cout << "capital: " << brazil.encontrarCapital() << "\n\n";
-    vector<vector<string>> kosaraju = brazil.kosaraju();
+    cout << "capital: " << brazil.encontrarCapital() << endl;
 
-    for (const auto& cfc : kosaraju) {
-        cout << "Componente fortemente conectada: ";
-        for (const auto& cidade : cfc) {
-            cout << cidade << " ";
+    pair<int, vector<string>> kosaraju = brazil.kosaraju();
+    cout << kosaraju.first << " Batalhão(s) extra em: ";
+    for (const auto& cidade : kosaraju.second) {
+        cout << cidade << " ";
+    }
+    cout << endl;
+
+    auto patrulhamentos = brazil.realizarPatrulhamento();
+
+    // Imprime os resultados do patrulhamento
+    if (patrulhamentos.empty()) {
+        std::cout << "Nenhum circuito Euleriano encontrado para patrulhamento.\n";
+    } else {
+        std::cout << "Circuitos de patrulhamento encontrados:\n";
+        for (const auto& [batalhao, circuito] : patrulhamentos) {
+            std::cout << "Batalhão: " << batalhao << "\nRota de patrulhamento: ";
+            for (const auto& cidade : circuito) {
+                std::cout << cidade << " -> ";
+            }
+            std::cout << circuito.front() << " (volta ao início)\n";  // Para completar o ciclo
+            std::cout << "----------------------------------\n";
         }
-        cout << endl;
     }
 
     return 0;

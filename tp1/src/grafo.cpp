@@ -120,7 +120,10 @@ vector<vector<string>> Grafo::kosaraju() {
     Grafo transposto = this->transpor();
 
     // Passo 3: DFS no grafo transposto usando a ordem da pilha
-    fill(visitado.begin(), visitado.end(), false);  // Limpar o vetor de visitados para a segunda DFS
+    // Limpar o vetor de visitados para a segunda DFS
+    for (auto& [key, value] : visitado) {
+        value = false;  // Resetando os valores para false
+    }
 
     while (!ordem.empty()) {
         string cidade = ordem.top();
@@ -135,4 +138,43 @@ vector<vector<string>> Grafo::kosaraju() {
     }
 
     return componentes;
+}
+
+bool Grafo::verificaEuleriano(const vector<string>& cfc) const {
+    unordered_map<string, int> inDegree, outDegree;
+
+    for (const auto& cidade : cfc) {
+        outDegree[cidade] = listaAdjacencia.at(cidade).size();
+        for (const auto& vizinho : listaAdjacencia.at(cidade)) {
+            inDegree[vizinho]++;
+        }
+    }
+
+    for (const auto& cidade : cfc) {
+        if (inDegree[cidade] != outDegree[cidade]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Algoritmo de Hierholzer para encontrar o circuito Euleriano
+vector<string> Grafo::hierholzer(const vector<string>& cfc) {
+    unordered_map<string, vector<string>> adjCopy = listaAdjacencia;
+    stack<string> pilha;
+    vector<string> circuito;
+    string start = cfc.front();
+
+    pilha.push(start);
+    while (!pilha.empty()) {
+        string cidade = pilha.top();
+        if (!adjCopy[cidade].empty()) {
+            pilha.push(adjCopy[cidade].back());
+            adjCopy[cidade].pop_back();
+        } else {
+            circuito.push_back(cidade);
+            pilha.pop();
+        }
+    }
+    return circuito;
 }
