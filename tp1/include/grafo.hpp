@@ -23,6 +23,7 @@ class Grafo {
         bool hasEstrada(const string& saida, const string& destino) const;
         const vector<string>& getAdjacencia(const string& nome) const;
         const vector<string> getCidades() const;
+        bool buscaCidade(const vector<string>& componente, const string& cidade) const;
 
         int* bfsDistanciaMaxima(const string& cidadeInicial) const;
 
