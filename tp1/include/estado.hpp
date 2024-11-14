@@ -21,7 +21,6 @@ class Estado{
         pair<int, vector<string>> batalhoes;
 
         void encontrarCapital();
-        bool encontrarCapital(const std::vector<std::string>& componente, const std::string& capital) const;
         void kosaraju();
         void realizarPatrulhamento();
     public:
