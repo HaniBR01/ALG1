@@ -5,8 +5,6 @@ Estado::Estado(int n, int m) {
     centros = n;
     estradas = m;
     capital = "";
-    // Lê as arestas
-    cout << "Digite as " << estradas << " estradas (saída, destino):" << endl;
     for (int i = 0; i < m; ++i) {
         string cidadeSaida, cidadeDestino;
         cin >> cidadeSaida >> cidadeDestino;
@@ -34,19 +32,6 @@ void Estado::encontrarCapital(){
     capital = cidadeCapital;
 }
 
-void Estado::printCapital(){
-    cout << "capital: " << capital << endl;
-}
-
-bool Estado::encontrarCapital(const vector<string>& componente, const string& capital) const {
-    for (const auto& cidade : componente) {
-        if (cidade == capital) {
-            return true;
-        }
-    }
-    return false;
-}
-
 void Estado::kosaraju() {
     // Inicialize um vetor de pares para armazenar a quantidade de batalhões e seus locais
     pair<int, vector<string>> batalhoesForaDaCapital;
@@ -58,7 +43,7 @@ void Estado::kosaraju() {
     cfcs = Imperio.kosaraju();
     for (const auto& componente : cfcs) {
         // Verifique se o local não é a capital e calcule os batalhões necessários
-        if (!encontrarCapital(componente,capital)) {
+        if (!Imperio.buscaCidade(componente, capital)) {
             batalhoesForaDaCapital.second.push_back(componente[0]);
             batalhoesForaDaCapital.first++;
         }
@@ -66,19 +51,33 @@ void Estado::kosaraju() {
     batalhoes = batalhoesForaDaCapital;
 }
 
-void Estado::printBatalhoes() {
-    cout << "Batalhões necessários fora da capital:" << endl;
-    
-    if (batalhoes.first == 0) {
-        cout << "Nenhum batalhão adicional é necessário fora da capital." << endl;
-        return;
+void Estado::realizarPatrulhamento() {
+    if(cfcs.empty()){
+        cfcs = Imperio.kosaraju();
     }
+    vector<pair<string, vector<string>>> patrulhas;
 
-    cout << "Número de batalhões fora da capital: " << batalhoes.first << endl;
-    cout << "Centros urbanos com batalhões adicionais:" << endl;
+    for (const auto& cfc : cfcs) {
+        if (Imperio.verificaEuleriano(cfc) && cfc.size() > 1) {
+            vector<string> circuito = Imperio.hierholzer(cfc);
+            if (!circuito.empty()) {
+                patrulhas.emplace_back(cfc.front(), circuito);
+            }
+        }
+    }
+    patrulhamentos = patrulhas;
+}
+
+void Estado::printCapital(){
+    cout << capital << endl;
+}
+
+void Estado::printBatalhoes() {
+
+    cout << batalhoes.first << endl;
     
     for (const auto& centro : batalhoes.second) {
-        cout << "- " << centro << endl;
+        cout << centro << " " << endl;
     }
 }
 
@@ -92,36 +91,13 @@ void Estado::printCFCS() {
     }
 }
 
-void Estado::realizarPatrulhamento() {
-    if(cfcs.empty()){
-        cfcs = Imperio.kosaraju();
-    }
-    vector<pair<string, vector<string>>> patrulhas;
-
-    for (const auto& cfc : cfcs) {
-        if (Imperio.verificaEuleriano(cfc)) {
-            vector<string> circuito = Imperio.hierholzer(cfc);
-            if (!circuito.empty()) {
-                patrulhas.emplace_back(cfc.front(), circuito);
-            }
-        }
-    }
-    patrulhamentos = patrulhas;
-}
-
 void Estado::printPatrulhamento() {
-    cout << "Circuitos de patrulhamento encontrados:" << endl;
+    cout << patrulhamentos.size() << endl;
     for (const auto& patrulha : patrulhamentos) {
-        const string& batalhao = patrulha.first;
         const vector<string>& rota = patrulha.second;
-        
-        cout << "Batalhão: " << batalhao << endl;
-        cout << "Rota de patrulhamento (inverso): ";
-        
-        // Printando a rota na ordem inversa
         for (int i = rota.size() - 1; i > 0; --i) {
             cout << rota[i] << " ";
         }
-        cout << endl << "----------------------------------" << endl;
+        cout << endl;
     }
 }
