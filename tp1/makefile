@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++17 -Wall
+CFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Wformat-security -Wconversion -Werror
 
 # Diretórios
 OBJ = ./obj
