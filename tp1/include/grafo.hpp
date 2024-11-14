@@ -32,6 +32,7 @@ class Grafo {
         void dfs(const string& cidadeInicial, unordered_map<string, bool>& visitado, vector<string>& cfc) const;
         vector<vector<string>> kosaraju();
 
+        void identificarExcessos(const vector<string>& cfc, vector<string>& excessosEntrada, vector<string>& excessosSaida) const;
         bool verificaEuleriano(const vector<string>& cfc) const;
         vector<string> hierholzer(const vector<string>& cfc);
 

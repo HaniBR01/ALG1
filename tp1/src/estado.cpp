@@ -52,16 +52,45 @@ void Estado::kosaraju() {
 }
 
 void Estado::realizarPatrulhamento() {
-    if(cfcs.empty()){
+    if (cfcs.empty()) {
         cfcs = Imperio.kosaraju();
     }
     vector<pair<string, vector<string>>> patrulhas;
 
     for (const auto& cfc : cfcs) {
-        if (Imperio.verificaEuleriano(cfc) && cfc.size() > 1) {
-            vector<string> circuito = Imperio.hierholzer(cfc);
-            if (!circuito.empty()) {
-                patrulhas.emplace_back(cfc.front(), circuito);
+        if (cfc.size() > 1) {
+            if (Imperio.verificaEuleriano(cfc)) {
+                // Se a CFC é euleriana, usa o algoritmo de Hierholzer normalmente
+                vector<string> circuito = Imperio.hierholzer(cfc);
+                if (!circuito.empty()) {
+                    patrulhas.emplace_back(cfc.front(), circuito);
+                }
+            } else {
+                // 1. Identificar vértices desbalanceados
+                vector<string> excessosEntrada, excessosSaida;
+                Imperio.identificarExcessos(cfc, excessosEntrada, excessosSaida);
+
+                // 2. Balancear o grafo: encontrar caminhos entre excessos de saída e entrada
+                vector<pair<string, string>> caminhosParaDuplicar;
+                for (const auto& saida : excessosSaida) {
+                    for (const auto& entrada : excessosEntrada) {
+                        if (Imperio.hasEstrada(saida, entrada)) {
+                            caminhosParaDuplicar.emplace_back(saida, entrada);
+                            break;  // Saia após encontrar um caminho
+                        }
+                    }
+                }
+
+                // 3. Duplicar as arestas dos caminhos encontrados
+                for (const auto& caminho : caminhosParaDuplicar) {
+                    Imperio.addEstrada(caminho.first, caminho.second);
+                }
+
+                // 4. Executar o Kosaraju e realizar o patrulhamento após o balanceamento
+                vector<string> circuito = Imperio.hierholzer(cfc);
+                if (!circuito.empty()) {
+                    patrulhas.emplace_back(cfc.front(), circuito);
+                }
             }
         }
     }

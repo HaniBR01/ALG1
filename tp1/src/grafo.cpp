@@ -104,6 +104,40 @@ void Grafo::dfs(const string& cidadeInicial, unordered_map<string, bool>& visita
     }
 }
 
+void Grafo::identificarExcessos(const vector<string>& cfc, vector<string>& excessosEntrada, vector<string>& excessosSaida) const {
+    // Cria mapas para armazenar o grau de entrada e saída dos vértices da CFC
+    unordered_map<string, int> outDegree, inDegree;
+
+    // Inicializa o grau de entrada e saída para todos os vértices da CFC
+    for (const auto& cidade : cfc) {
+        outDegree[cidade] = 0;
+        inDegree[cidade] = 0;
+    }
+
+    // Calcula os graus de entrada e saída considerando apenas arestas internas à CFC
+    for (const auto& cidade : cfc) {
+        for (const auto& vizinho : listaAdjacencia.at(cidade)) {
+            if (buscaCidade(cfc,vizinho)) {
+                // Se o vizinho está na mesma CFC, incrementa os graus
+                outDegree[cidade]++;
+                inDegree[vizinho]++;
+            }
+        }
+    }
+
+    // Identifica os vértices desbalanceados
+    for (const auto& cidade : cfc) {
+        int saida = outDegree[cidade];
+        int entrada = inDegree[cidade];
+
+        if (saida > entrada) {
+            excessosSaida.push_back(cidade);
+        } else if (entrada > saida) {
+            excessosEntrada.push_back(cidade);
+        }
+    }
+}
+
 vector<vector<string>> Grafo::kosaraju() {
     unordered_map<string, bool> visitado;
     stack<string> ordem;  // Pilha para armazenar a ordem de término dos nós

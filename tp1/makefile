@@ -7,7 +7,7 @@ BIN = ./bin
 INCLUDE = ./include
 SRC = ./src
 
-target = ${BIN}/main.out
+target = ${BIN}/tp1
 
 all:
 	mkdir -p bin
@@ -16,14 +16,20 @@ all:
 	make ${OBJ}/estado.o
 	make ${OBJ}/main.o
 	make ${target}
+	make valgrind
 
 run:
 	${target} < teste1.txt
 	${target} < teste2.txt
 	${target} < teste3.txt
+	${target} < teste4.txt
+	valgrind ${BIN}/mentest
 
 ${target}: ${OBJ}/*
 	${CC} ${CFLAGS} ${OBJ}/* -o ${target}
+
+valgrind: ${OBJ}/*
+	${CC} ${CFLAGS} -g ${OBJ}/* -o ${BIN}/mentest
 
 ${OBJ}/main.o: ${SRC}/main.cpp
 	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/main.cpp -o ${OBJ}/main.o
