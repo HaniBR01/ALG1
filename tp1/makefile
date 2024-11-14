@@ -10,6 +10,8 @@ SRC = ./src
 target = ${BIN}/main.out
 
 all:
+	mkdir -p bin
+	mkdir -p obj
 	make ${OBJ}/grafo.o
 	make ${OBJ}/estado.o
 	make ${OBJ}/main.o
