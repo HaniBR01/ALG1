@@ -7,15 +7,12 @@ using namespace std;
 
 int main() {
     int n, m;
-    cout << "Digite o número de cidades (nós): ";
-    cin >> n;
-    cout << "Digite o número de estradas (arestas): ";
-    cin >> m;
+    cin >> n >> m;
 
     Estado brazil(n,m);
 
     brazil.printCapital();
-    brazil.printCFCS();
+    //brazil.printCFCS();
     brazil.printBatalhoes();
     brazil.printPatrulhamento();
 
