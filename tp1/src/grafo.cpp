@@ -140,13 +140,26 @@ vector<vector<string>> Grafo::kosaraju() {
     return componentes;
 }
 
+bool Grafo::buscaCidade(const vector<string>& componente, const string& cidade) const{
+    for (const auto& centro : componente) {
+        if (centro == cidade) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Grafo::verificaEuleriano(const vector<string>& cfc) const {
     unordered_map<string, int> inDegree, outDegree;
 
     for (const auto& cidade : cfc) {
-        outDegree[cidade] = listaAdjacencia.at(cidade).size();
+        outDegree[cidade] = 0;  // Inicializar o grau de saída
         for (const auto& vizinho : listaAdjacencia.at(cidade)) {
-            inDegree[vizinho]++;
+            // Verifique se o vizinho está na mesma CFC
+            if (buscaCidade(cfc, vizinho)) {
+                outDegree[cidade]++;  // Incrementa o grau de saída
+                inDegree[vizinho]++;   // Incrementa o grau de entrada
+            }
         }
     }
 
@@ -164,13 +177,17 @@ vector<string> Grafo::hierholzer(const vector<string>& cfc) {
     stack<string> pilha;
     vector<string> circuito;
     string start = cfc.front();
+    string candidato;
 
     pilha.push(start);
     while (!pilha.empty()) {
         string cidade = pilha.top();
         if (!adjCopy[cidade].empty()) {
-            pilha.push(adjCopy[cidade].back());
+            candidato = adjCopy[cidade].back();
             adjCopy[cidade].pop_back();
+            if(buscaCidade(cfc,candidato)){
+                pilha.push(candidato);
+            }
         } else {
             circuito.push_back(cidade);
             pilha.pop();
