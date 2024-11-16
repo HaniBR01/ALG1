@@ -24,6 +24,15 @@ bool Grafo::hasEstrada(const string& saida, const string& destino) const {
     return false;
 }
 
+bool Grafo::hasCidade(const vector<string>& componente, const string& cidade) const{
+    for (const auto& centro : componente) {
+        if (centro == cidade) {
+            return true;
+        }
+    }
+    return false;
+}
+
 const vector<string>& Grafo::getAdjacencia(const string& nome) const {
     return listaAdjacencia.at(nome);
 }
@@ -64,8 +73,7 @@ int* Grafo::bfsDistanciaMaxima(const string& cidadeInicial) const {
 
 void Grafo::dfs(const string& cidadeInicial, unordered_map<string, bool>& visitado, stack<string>& ordem) const {
     visitado[cidadeInicial] = true;
-    
-    // Se a cidade tem vizinhos, visitamos eles recursivamente
+
     if (listaAdjacencia.find(cidadeInicial) != listaAdjacencia.end()) {
         for (const auto& vizinho : listaAdjacencia.at(cidadeInicial)) {
             if (!visitado[vizinho]) {
@@ -73,8 +81,7 @@ void Grafo::dfs(const string& cidadeInicial, unordered_map<string, bool>& visita
             }
         }
     }
-    
-    // Após visitar todos os vizinhos, empurramos a cidade para a pilha
+
     ordem.push(cidadeInicial);
 }
 
@@ -93,7 +100,7 @@ Grafo Grafo::transpor() const {
 
 void Grafo::dfs(const string& cidadeInicial, unordered_map<string, bool>& visitado, vector<string>& cfc) const {
     visitado[cidadeInicial] = true;
-    cfc.push_back(cidadeInicial);  // Adiciona a cidade à componente fortemente conexa
+    cfc.push_back(cidadeInicial);
 
     if (listaAdjacencia.find(cidadeInicial) != listaAdjacencia.end()) {
         for (const auto& vizinho : listaAdjacencia.at(cidadeInicial)) {
@@ -104,28 +111,56 @@ void Grafo::dfs(const string& cidadeInicial, unordered_map<string, bool>& visita
     }
 }
 
-void Grafo::identificarExcessos(const vector<string>& cfc, vector<string>& excessosEntrada, vector<string>& excessosSaida) const {
-    // Cria mapas para armazenar o grau de entrada e saída dos vértices da CFC
-    unordered_map<string, int> outDegree, inDegree;
+vector<vector<string>> Grafo::kosaraju() {
+    unordered_map<string, bool> visitado;
+    stack<string> ordem;
+    vector<vector<string>> componentes;
 
-    // Inicializa o grau de entrada e saída para todos os vértices da CFC
+    for (const auto& cidade : cidades) {
+        if (!visitado[cidade]) {
+            dfs(cidade, visitado, ordem);
+        }
+    }
+
+    Grafo transposto = this->transpor();
+
+    for (auto& [key, value] : visitado) {
+        value = false;
+    }
+
+    while (!ordem.empty()) {
+        string cidade = ordem.top();
+        ordem.pop();
+
+        if (!visitado[cidade]) {
+            vector<string> cfc;
+            transposto.dfs(cidade, visitado, cfc);
+            componentes.push_back(cfc);
+        }
+    }
+
+    return componentes;
+}
+
+void Grafo::identificarExcessos(const vector<string>& cfc,
+                                vector<string>& excessosEntrada,
+                                vector<string>& excessosSaida) const {
+    
+    unordered_map<string, int> outDegree, inDegree;
     for (const auto& cidade : cfc) {
         outDegree[cidade] = 0;
         inDegree[cidade] = 0;
     }
 
-    // Calcula os graus de entrada e saída considerando apenas arestas internas à CFC
     for (const auto& cidade : cfc) {
         for (const auto& vizinho : listaAdjacencia.at(cidade)) {
-            if (buscaCidade(cfc,vizinho)) {
-                // Se o vizinho está na mesma CFC, incrementa os graus
+            if (hasCidade(cfc,vizinho)) {
                 outDegree[cidade]++;
                 inDegree[vizinho]++;
             }
         }
     }
 
-    // Identifica os vértices desbalanceados
     for (const auto& cidade : cfc) {
         int saida = outDegree[cidade];
         int entrada = inDegree[cidade];
@@ -138,61 +173,67 @@ void Grafo::identificarExcessos(const vector<string>& cfc, vector<string>& exces
     }
 }
 
-vector<vector<string>> Grafo::kosaraju() {
-    unordered_map<string, bool> visitado;
-    stack<string> ordem;  // Pilha para armazenar a ordem de término dos nós
-    vector<vector<string>> componentes;
+vector<string> Grafo::bfs(const string& start, const string& end) {
+    unordered_map<string, string> parent;
+    unordered_set<string> visited;
+    queue<string> q;
+    q.push(start);
+    visited.insert(start);
 
-    // Passo 1: DFS no grafo original
-    for (const auto& cidade : cidades) {
-        if (!visitado[cidade]) {
-            dfs(cidade, visitado, ordem);
+    while (!q.empty()) {
+        string cidadeAtual = q.front();
+        q.pop();
+
+        if (cidadeAtual == end) {
+            vector<string> caminho;
+            while (cidadeAtual != start) {
+                caminho.push_back(cidadeAtual);
+                cidadeAtual = parent[cidadeAtual];
+            }
+            caminho.push_back(start);
+
+            vector<string> caminhoRevertido;
+            for (size_t i = caminho.size() - 1; i != static_cast<size_t>(-1); --i) {
+                caminhoRevertido.push_back(caminho[i]);
+            }
+            return caminhoRevertido;
+        }
+
+        for (const string& vizinho : this->getAdjacencia(cidadeAtual)) {
+            if (visited.find(vizinho) == visited.end()) {
+                visited.insert(vizinho);
+                parent[vizinho] = cidadeAtual;
+                q.push(vizinho);
+            }
         }
     }
-
-    // Passo 2: Transpor o grafo
-    Grafo transposto = this->transpor();
-
-    // Passo 3: DFS no grafo transposto usando a ordem da pilha
-    // Limpar o vetor de visitados para a segunda DFS
-    for (auto& [key, value] : visitado) {
-        value = false;  // Resetando os valores para false
-    }
-
-    while (!ordem.empty()) {
-        string cidade = ordem.top();
-        ordem.pop();
-
-        // Se a cidade ainda não foi visitada, ela pertence a uma nova CFC
-        if (!visitado[cidade]) {
-            vector<string> cfc;
-            transposto.dfs(cidade, visitado, cfc);  // Realiza a DFS no grafo transposto
-            componentes.push_back(cfc);  // Adiciona a componente fortemente conexa
-        }
-    }
-
-    return componentes;
+    return {};
 }
 
-bool Grafo::buscaCidade(const vector<string>& componente, const string& cidade) const{
-    for (const auto& centro : componente) {
-        if (centro == cidade) {
-            return true;
+void Grafo::balancearGrafo(vector<string>& excessosEntrada, vector<string>& excessosSaida) {
+    for (size_t i = 0; i <= excessosEntrada.size() - 1; i++) {
+        auto cidadeEntrada = excessosEntrada[i];
+        auto cidadeSaida= excessosSaida[i];
+        vector<string> caminho = bfs(cidadeEntrada, cidadeSaida);
+
+        if (!caminho.empty()) {
+            for (size_t i = 0; i < caminho.size() - 1; ++i) {
+                addEstrada(caminho[i], caminho[i + 1]);
+            }
         }
+        
     }
-    return false;
 }
 
 bool Grafo::verificaEuleriano(const vector<string>& cfc) const {
     unordered_map<string, int> inDegree, outDegree;
 
     for (const auto& cidade : cfc) {
-        outDegree[cidade] = 0;  // Inicializar o grau de saída
+        outDegree[cidade] = 0;
         for (const auto& vizinho : listaAdjacencia.at(cidade)) {
-            // Verifique se o vizinho está na mesma CFC
-            if (buscaCidade(cfc, vizinho)) {
-                outDegree[cidade]++;  // Incrementa o grau de saída
-                inDegree[vizinho]++;   // Incrementa o grau de entrada
+            if (hasCidade(cfc, vizinho)) {
+                outDegree[cidade]++;
+                inDegree[vizinho]++;
             }
         }
     }
@@ -205,7 +246,6 @@ bool Grafo::verificaEuleriano(const vector<string>& cfc) const {
     return true;
 }
 
-// Algoritmo de Hierholzer para encontrar o circuito Euleriano
 vector<string> Grafo::hierholzer(const vector<string>& cfc) {
     unordered_map<string, vector<string>> adjCopy = listaAdjacencia;
     stack<string> pilha;
@@ -219,7 +259,7 @@ vector<string> Grafo::hierholzer(const vector<string>& cfc) {
         if (!adjCopy[cidade].empty()) {
             candidato = adjCopy[cidade].back();
             adjCopy[cidade].pop_back();
-            if(buscaCidade(cfc,candidato)){
+            if(hasCidade(cfc,candidato)){
                 pilha.push(candidato);
             }
         } else {

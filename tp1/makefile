@@ -6,6 +6,7 @@ OBJ = ./obj
 BIN = ./bin
 INCLUDE = ./include
 SRC = ./src
+TEST = ./inputs
 
 target = ${BIN}/tp1
 
@@ -19,11 +20,15 @@ all:
 	make valgrind
 
 run:
-	${target} < teste1.txt
-	${target} < teste2.txt
-	${target} < teste3.txt
-	${target} < teste4.txt
-	valgrind ${BIN}/mentest
+	$(target) < $(TEST)/testCase01.txt
+	$(target) < $(TEST)/testCase02.txt
+	$(target) < $(TEST)/testCase03.txt
+	$(target) < $(TEST)/testCase04.txt
+	$(target) < $(TEST)/testCase05.txt
+	$(target) < $(TEST)/testCase06.txt
+	$(target) < $(TEST)/testCase07.txt
+	$(target) < $(TEST)/testCase08.txt
+	valgrind ${BIN}/mentest < teste2.txt
 
 ${target}: ${OBJ}/*
 	${CC} ${CFLAGS} ${OBJ}/* -o ${target}
@@ -42,4 +47,4 @@ ${OBJ}/estado.o: ${SRC}/estado.cpp
 
 clean:
 	rm -r ./obj/*.o
-	rm -r ./bin/*.*
+	rm ./bin/*
