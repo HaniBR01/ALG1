@@ -25,7 +25,7 @@ teste2:
     addi a2, zero, 2
     jal ra, primosmersenne
     addi t0, zero, 7
-    bne a2,t0, FIM
+    bne a0,t0, FIM
     addi s0,s0,1
    	beq zero,zero, FIM
     
@@ -53,30 +53,28 @@ geramersenne_loop:
     # Calcula 2^(t0+1) - 1
     add t2, t0, zero          # t2 = n = t0 + 1
     addi t3, zero, 1        # t3 = base = 1 (2^0)
+	geramersenne_pow:
+        beqz t2, geramersenne_store # Se t2 == 0, vai armazenar
+        slli t3, t3, 1          # t3 = t3 * 2
+        addi t2, t2, -1         # Decrementa t2
+        j geramersenne_pow
+    geramersenne_store:
+        addi t3, t3, -1         # t3 = t3 - 1 (2^n - 1)
+        sw t3, 0(t1)            # Armazena t3 no vetor
+        addi t1, t1, 4          # Incrementa o endereço do vetor
+        addi t0, t0, 1          # Incrementa o contador
+        j geramersenne_loop     # Próximo número
 
-geramersenne_pow:
-    beqz t2, geramersenne_store # Se t2 == 0, vai armazenar
-    slli t3, t3, 1          # t3 = t3 * 2
-    addi t2, t2, -1         # Decrementa t2
-    j geramersenne_pow
-
-geramersenne_store:
-    addi t3, t3, -1         # t3 = t3 - 1 (2^n - 1)
-    sw t3, 0(t1)            # Armazena t3 no vetor
-    addi t1, t1, 4          # Incrementa o endereço do vetor
-    addi t0, t0, 1          # Incrementa o contador
-    j geramersenne_loop     # Próximo número
-
-geramersenne_done:
-    # Restaura os registradores e retorna
-    lw ra, 0(sp)            # Restaura o registrador ra
-    lw t0, 4(sp)            # Restaura t0
-    lw t1, 8(sp)            # Restaura t1
-    lw t2, 12(sp)			# Restaura t2
-    lw t3, 16(sp)			# Restaura t3
-    lw t4, 20(sp)			# Restaura t4
-    addi sp, sp, 24         # Libera espaço na pilha
-    jalr zero, 0(ra)        # Retorna             # t3 = base = 1 (2^0
+    geramersenne_done:
+        # Restaura os registradores e retorna
+        lw ra, 0(sp)            # Restaura o registrador ra
+        lw t0, 4(sp)            # Restaura t0
+        lw t1, 8(sp)            # Restaura t1
+        lw t2, 12(sp)			# Restaura t2
+        lw t3, 16(sp)			# Restaura t3
+        lw t4, 20(sp)			# Restaura t4
+        addi sp, sp, 24         # Libera espaço na pilha
+        jalr zero, 0(ra)        # Retorna
 
 eprimo:
 	addi sp, sp, -12
@@ -110,14 +108,38 @@ eprimo:
 		jalr zero, 0(ra)
         
 primosmersenne:
-	addi sp, sp, -12
-    sw t0, 8(sp)
-    sw t1, 4(sp)
+	addi sp, sp, -20
     sw ra, 0(sp)
+    sw t0, 4(sp)
+    sw t1, 8(sp)
+    sw t2, 12(sp)
+    sw t3, 16(sp)
+    
 	jal ra, geramersenne
     
+    add t0, a2, zero
+    add t1, a1, zero
+    addi t2, zero, 32
+	while:
+    	beqz t0, termino
+        beqz t2, termino
+        lw a0, 0(t1)
+        add t3, a0, zero
+        jal ra, primo
+        addi t1, t1, 4
+        addi t2, t2, -1
+        bne a0, zero, while
+    	add a0, t3, zero
+        addi t0, t0, -1
+        beqz zero, while
+    termino:
+    lw ra, 0(sp)
+    lw t0, 4(sp)
+    lw t1, 8(sp)
+    lw t2, 12(sp)
+    lw t3, 16(sp)
+	addi sp, sp, 20
 	jalr zero, 0(ra)
-
 ##### R2 END MODIFIQUE AQUI END #####
 
 FIM: add t0, zero, s0
