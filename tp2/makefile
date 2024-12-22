@@ -14,7 +14,6 @@ all:
 	mkdir -p bin
 	mkdir -p obj
 	make ${OBJ}/Grafo.o
-	make ${OBJ}/NetworkAnalysis.o
 	make ${OBJ}/main.o
 	make ${target}
 	make valgrind
@@ -29,7 +28,7 @@ run:
 	$(target) < $(TEST)/testCase07.txt
 	$(target) < $(TEST)/testCase08.txt
 other:	
-	valgrind ${BIN}/mentest < $(TEST)/testCase01.txt
+	valgrind -s ${BIN}/mentest < $(TEST)/testCase04.txt
 
 ${target}: ${OBJ}/*
 	${CC} ${CFLAGS} ${OBJ}/* -o ${target}
@@ -42,9 +41,6 @@ ${OBJ}/main.o: ${SRC}/main.cpp
 
 ${OBJ}/Grafo.o: ${SRC}/Grafo.cpp
 	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/Grafo.cpp -o ${OBJ}/Grafo.o
-
-${OBJ}/NetworkAnalysis.o: ${SRC}/NetworkAnalysis.cpp
-	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/NetworkAnalysis.cpp -o ${OBJ}/NetworkAnalysis.o
 
 clean:
 	rm -r ./obj/*.o
