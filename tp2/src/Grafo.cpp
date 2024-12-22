@@ -49,6 +49,7 @@ Grafo::Grafo(int numVertices, int arestas){
     dreno = std::numeric_limits<int>::min();
     energiaExigida = 0;
     energiaFornecida = 0;
+    energiaAtendida = 0;
 
     addVertice(fonte);
     addVertice(dreno);
@@ -112,7 +113,6 @@ bool Grafo::bfsFordFulkerson(std::map<int, int>& parent) {
 
 void Grafo::fordFulkerson() {
     std::map<int, int> parent;
-    int energiaAtendida = 0;
     //int i = 0;
     while (bfsFordFulkerson(parent)) {
         //std::cout << "testes " << i++ << std::endl;
