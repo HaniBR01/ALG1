@@ -120,7 +120,7 @@ void Grafo::fordFulkerson() {
         for (int v = dreno; v != fonte; v = parent[v]) {
             int u = parent[v];
             int residual = vertices[u].adjList[v].capacidade - vertices[u].adjList[v].fluxo;
-            fluxo_caminho = std::min(fluxo_caminho, residual);
+            fluxo_caminho = (fluxo_caminho < residual) ? fluxo_caminho : residual;
         }
         for (int v = dreno; v != fonte; v = parent[v]) {
             int u = parent[v];

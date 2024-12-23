@@ -28,7 +28,14 @@ run:
 	$(target) < $(TEST)/testCase07.txt
 	$(target) < $(TEST)/testCase08.txt
 other:	
+	valgrind -s ${BIN}/mentest < $(TEST)/testCase01.txt
+	valgrind -s ${BIN}/mentest < $(TEST)/testCase02.txt
+	valgrind -s ${BIN}/mentest < $(TEST)/testCase03.txt
 	valgrind -s ${BIN}/mentest < $(TEST)/testCase04.txt
+	valgrind -s ${BIN}/mentest < $(TEST)/testCase05.txt
+	valgrind -s ${BIN}/mentest < $(TEST)/testCase06.txt
+	valgrind -s ${BIN}/mentest < $(TEST)/testCase07.txt
+	valgrind -s ${BIN}/mentest < $(TEST)/testCase08.txt
 
 ${target}: ${OBJ}/*
 	${CC} ${CFLAGS} ${OBJ}/* -o ${target}

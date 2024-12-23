@@ -36,7 +36,6 @@ private:
     //indices dos nós superFonte e superDreno
     int fonte;
     int dreno;
-    
     //vertices do grafo
     std::map<int,Vertice> vertices;
     //função de instanciação do grafo
