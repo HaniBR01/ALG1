@@ -9,7 +9,6 @@ SRC = ./src
 TEST = ./inputs
 
 target = ./tp3
-tool = ${SRC}/Grafo.cpp ${SRC}/Dynamic.cpp ${SRC}/Greedy.cpp ${SRC}/BruteForce.cpp
 
 all:
 	make clean
@@ -53,7 +52,16 @@ main.o: ${SRC}/main.cpp
 	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/main.cpp -o ${OBJ}/main.o
 
 Grafo.o: ${SRC}/Grafo.cpp
-	${CC} ${CFLAGS} -I ${INCLUDE} -c ${tool} -o ${OBJ}/Grafo.o
+	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/Grafo.cpp -o ${OBJ}/Grafo.o
+
+Greedy.o: ${SRC}/Greedy.cpp
+	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/Greedy.cpp -o ${OBJ}/Greedy.o
+
+Dynamic.o: ${SRC}/Dynamic.cpp
+	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/Dynamic.cpp -o ${OBJ}/Dynamic.o
+
+BruteForce.o: ${SRC}/BruteForce.cpp
+	${CC} ${CFLAGS} -I ${INCLUDE} -c ${SRC}/BruteForce.cpp -o ${OBJ}/BruteForce.o
 
 
 clean:
