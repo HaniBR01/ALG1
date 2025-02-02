@@ -11,7 +11,6 @@ TEST = ./inputs
 target = ./tp3
 
 all:
-	make clean
 	mkdir -p bin
 	mkdir -p obj
 	make Grafo.o

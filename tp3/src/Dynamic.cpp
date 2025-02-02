@@ -1,7 +1,7 @@
-#include "Greedy.hpp"
+#include "Grafo.hpp"
 
 std::pair<int, std::vector<int>> Grafo::tspDynamic() {
-    int n = matriz.size();
+    int n = int(matriz.size());
     std::vector<std::vector<int>> dp(n, std::vector<int>(1 << n, -1));
     std::vector<std::vector<int>> parent(n, std::vector<int>(1 << n, -1));
     

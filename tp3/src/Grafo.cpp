@@ -20,8 +20,6 @@ Grafo::Grafo(int vertices, int arestas){
         }
         addAresta(origem, destino, custo);
     }
-    if(int(map.size()) != vertices-1)
-        std::cout << "erro";
 }
 
 void Grafo::addVertice(std::string cidade, int indice){
@@ -38,12 +36,12 @@ void Grafo::addAresta(std::string origem, std::string destino, int custo){
 }
 
 void Grafo::print(std::pair<int, std::vector<int>> vec){
-    std::cout << "Custo: " << vec.first << std::endl;
-    int n = int(vec.second.size());
+    std::cout << vec.first << std::endl;
+    int n = int(vec.second.size())-1;
     for(int i = 0; i < n; i++){
         std::string c = cidades[vec.second[i]];
         if(i == n-1)
-            std::cout << c;
+            std::cout << c << std::endl;
         else
             std::cout << c << " ";
     }
