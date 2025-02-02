@@ -1,14 +1,14 @@
 #include "Grafo.hpp"
 
 std::pair<int, std::vector<int>> Grafo::tspBruteForce() {
-    int numNodes = matriz.size();
+    int numNodes = int(matriz.size());
     std::vector<int> nodes;
     for (int i = 1; i < numNodes; i++)
         nodes.push_back(i);
 
     int minCost = std::numeric_limits<int>::max();
     std::vector<int> bestPath;
-    permute(nodes, 0, nodes.size() - 1, minCost, bestPath);
+    permute(nodes, 0, int(nodes.size() - 1), minCost, bestPath);
     return {minCost, bestPath};
 }
 
@@ -16,7 +16,7 @@ void Grafo::permute(std::vector<int> &nodes, int l, int r, int &minCost, std::ve
     if (l == r) {
         int currCost = 0, currNode = 0;
         std::vector<int> path = {0};
-        for (int i = 0; i < nodes.size(); i++) {
+        for (int i = 0; i < int(nodes.size()); i++) {
             currCost += matriz[currNode][nodes[i]];
             currNode = nodes[i];
             path.push_back(currNode);

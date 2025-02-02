@@ -15,6 +15,9 @@ all:
 	mkdir -p bin
 	mkdir -p obj
 	make Grafo.o
+	make Greedy.o
+	make BruteForce.o
+	make Dynamic.o
 	make main.o
 	make target
 	make valgrind
