@@ -1,5 +1,7 @@
 #include "Grafo.hpp"
 
+//codigo adaptado do geeks for geeks 
+
 std::pair<int, std::vector<int>> Grafo::tspGreedy() {
     
     auto start = std::chrono::high_resolution_clock::now();

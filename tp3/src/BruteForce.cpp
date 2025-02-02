@@ -1,5 +1,7 @@
 #include "Grafo.hpp"
 
+//codigo adaptado do geeks for geeks
+
 std::pair<int, std::vector<int>> Grafo::tspBruteForce() {
     
     auto start = std::chrono::high_resolution_clock::now();
@@ -15,8 +17,8 @@ std::pair<int, std::vector<int>> Grafo::tspBruteForce() {
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    printFile(duration,"Greedy.csv");
-    
+    printFile(duration,"BruteForce.csv");
+
     return {minCost, bestPath};
 }
 
