@@ -47,7 +47,7 @@ void Grafo::print(std::pair<int, std::vector<int>> vec){
     }
 }
 
-void Grafo::printFile(auto duration, std::string filename){
+void Grafo::printFile(std::chrono::milliseconds duration, std::string filename){
     std::ofstream outfile(filename, std::ios_base::app);
 
     if (!outfile) {
