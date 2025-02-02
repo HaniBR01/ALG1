@@ -1,6 +1,9 @@
 #include "Grafo.hpp"
 
 std::pair<int, std::vector<int>> Grafo::tspDynamic() {
+
+    auto start = std::chrono::high_resolution_clock::now();
+    
     int n = int(matriz.size());
     std::vector<std::vector<int>> dp(n, std::vector<int>(1 << n, -1));
     std::vector<std::vector<int>> parent(n, std::vector<int>(1 << n, -1));
@@ -49,7 +52,11 @@ std::pair<int, std::vector<int>> Grafo::tspDynamic() {
         pos = next_pos;
     }
     path.push_back(0); // Return to start
-    
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    printFile(duration,"Dynamic.csv");
+
     return {min_cost, path};
 }
 

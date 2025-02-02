@@ -1,6 +1,9 @@
 #include "Grafo.hpp"
 
 std::pair<int, std::vector<int>> Grafo::tspBruteForce() {
+    
+    auto start = std::chrono::high_resolution_clock::now();
+
     int numNodes = int(matriz.size());
     std::vector<int> nodes;
     for (int i = 1; i < numNodes; i++)
@@ -9,6 +12,11 @@ std::pair<int, std::vector<int>> Grafo::tspBruteForce() {
     int minCost = std::numeric_limits<int>::max();
     std::vector<int> bestPath;
     permute(nodes, 0, int(nodes.size() - 1), minCost, bestPath);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    printFile(duration,"Greedy.csv");
+    
     return {minCost, bestPath};
 }
 

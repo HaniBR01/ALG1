@@ -1,6 +1,9 @@
 #include "Grafo.hpp"
 
 std::pair<int, std::vector<int>> Grafo::tspGreedy() {
+    
+    auto start = std::chrono::high_resolution_clock::now();
+
     auto tsp = matriz;
     int sum = 0;
     int counter = 0;
@@ -37,6 +40,10 @@ std::pair<int, std::vector<int>> Grafo::tspGreedy() {
     // Retornando ao ponto inicial
     sum += tsp[i][0];
     route.push_back(0);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    printFile(duration,"Greedy.csv");
 
     return {sum, route};
 }

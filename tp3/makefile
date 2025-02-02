@@ -33,16 +33,33 @@ run:
 	$(target) < $(TEST)/testCase09.txt
 	$(target) < $(TEST)/testCase10.txt
 other:	
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase01.txt
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase02.txt
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase03.txt
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase04.txt
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase05.txt
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase06.txt
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase07.txt
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase08.txt
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase09.txt
-	valgrind -s ${BIN}/mentest < $(TEST)/testCase10.txt
+	(echo 'b'; cat $(TEST)/testCase01.txt) | valgrind  ${BIN}/mentest
+	(echo 'b'; cat $(TEST)/testCase02.txt) | valgrind  ${BIN}/mentest
+	(echo 'b'; cat $(TEST)/testCase03.txt) | valgrind  ${BIN}/mentest
+	(echo 'b'; cat $(TEST)/testCase04.txt) | valgrind  ${BIN}/mentest
+	(echo 'b'; cat $(TEST)/testCase05.txt) | valgrind  ${BIN}/mentest
+	(echo 'b'; cat $(TEST)/testCase06.txt) | valgrind  ${BIN}/mentest
+	(echo 'b'; cat $(TEST)/testCase07.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase01.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase02.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase03.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase04.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase05.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase06.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase07.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase08.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase09.txt) | valgrind  ${BIN}/mentest
+	(echo 'g'; cat $(TEST)/testCase10.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase01.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase02.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase03.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase04.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase05.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase06.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase07.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase08.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase09.txt) | valgrind  ${BIN}/mentest
+	(echo 'd'; cat $(TEST)/testCase10.txt) | valgrind  ${BIN}/mentest
 
 target: ${OBJ}/*
 	${CC} ${CFLAGS} ${OBJ}/* -o ${target}

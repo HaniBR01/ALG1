@@ -1,4 +1,4 @@
-b 8 28
+8 28
 Technos Xanadu 191
 Technos Vanguard 151
 Technos Denbutree 192

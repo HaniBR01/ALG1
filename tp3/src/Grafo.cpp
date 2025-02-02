@@ -46,3 +46,15 @@ void Grafo::print(std::pair<int, std::vector<int>> vec){
             std::cout << c << " ";
     }
 }
+
+void Grafo::printFile(auto duration, std::string filename){
+    std::ofstream outfile(filename, std::ios_base::app);
+
+    if (!outfile) {
+        std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+        exit(1);
+    }
+
+    outfile << duration.count() << std::endl;
+    outfile.close();
+}

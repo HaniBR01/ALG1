@@ -8,6 +8,8 @@
 #include <vector>
 #include <tuple>
 #include <queue>
+#include <chrono>
+#include <fstream>
 
 class Grafo {
 public:
@@ -23,6 +25,7 @@ private:
     std::vector<std::vector<int>> matriz;
 
     //função de instanciação do grafo
+    void printFile(auto tempo, std::string file);
     void addVertice(std::string cidade, int indice);
     void addAresta(std::string cidade1, std::string cidade2, int capacidade);
     void permute(std::vector<int> &nodes, int l, int r, int &minCost, std::vector<int> &bestPath);
